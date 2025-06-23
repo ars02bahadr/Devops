@@ -1,4 +1,4 @@
-name: Build & Deploy to Kubernetes
+name: Build & Push Docker Image
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-deploy:
+  build-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,12 +23,3 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/fastapi-app:latest .
         docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-app:latest
-
-    - name: Set up Kubeconfig
-      run: |
-        mkdir -p $HOME/.kube
-        echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > $HOME/.kube/config
-
-    - name: Restart Kubernetes deployment
-      run: |
-        kubectl rollout restart deployment fastapi-deployment
